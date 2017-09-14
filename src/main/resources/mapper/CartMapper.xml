@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mysystem.dao.CartDao">
+	<!-- 账户信息Dao层的实现 -->
+	<resultMap type="com.mysystem.entity.Cart" id="cartMap">
+		<id column="cartId" property="cartId"/>
+		<result column="uid" property="uid"/>
+		<result column="bookId" property="bookId"/>
+		<result column="bookName" property="bookName"/>
+		<result column="num" property="num"/>
+		<result column="sum" property="sum"/>
+		<result column="buy" property="buy"/>
+		<result column="time" property="time"/>
+	</resultMap>
+
+	<select id="findByCartId" parameterType="Integer" resultType="Cart">
+		select * from cart  where cartId=#{cartId}
+	</select>
+	<update id="editCart" parameterType="Cart">
+	  update cart set num=#{num},sum=#{sum}  where cartId = #{cartId}
+	</update>
+	<insert id="add" parameterType="Cart"> insert into cart(uid,bookId,bookName,num,sum,buy,time) values(#{uid},#{bookId},#{bookName},#{num},#{sum},#{buy},'-') </insert>
+	
+	<select id="findAll" parameterType="com.mysystem.PageModel.PageModel" resultMap="cartMap">
+		select * from cart  where uid=${uid} and buy=0
+		
+		limit #{pagestart},#{pagesize}
+	</select>
+	
+	<!-- 计数 -->
+	<select id="countAll"  parameterType="com.mysystem.PageModel.PageModel" resultType="Integer">
+		select count(*) from cart  where uid=${uid} and buy=0
+	</select>
+	
+	
+	<select id="getCartSum"   resultType="double">
+		select coalesce(sum(sum),0) from cart  where uid=#{uid} and buy=0
+	</select>
+	
+	<select id="isExist"   resultType="Integer">
+		select cartId from cart  where uid=${uid} and buy=0 and bookId=${bookId}
+	</select>
+	<update id="updateCart" parameterType="Cart">
+	  update cart set num=num+#{num},sum=sum+#{sum}  where uid=#{uid} and buy=0 and bookId=#{bookId}
+	</update>
+	
+	<select id="findById" resultMap="cartMap">
+		select * from cart  where cartid=#{cartId}
+	</select>
+	
+	<delete id="delete" parameterType="Integer"> delete from cart where cartId=#{cartId}</delete>
+	
+	<update id="buy" parameterType="temp">
+	  update cart set buy='1',time='${time}'  where uid = #{uid} and buy=0
+	</update>
+	
+	
+		<select id="findAllBuy" parameterType="com.mysystem.PageModel.PageModel" resultMap="cartMap">
+		select * from cart  where uid=${uid} and buy=1
+		
+		limit #{pagestart},#{pagesize}
+	</select>
+	
+	<!-- 计数 -->
+	<select id="countAllBuy"  parameterType="com.mysystem.PageModel.PageModel" resultType="Integer">
+		select count(*) from cart  where uid=${uid} and buy=1
+	</select>
+	
+	
+	<select id="getBuySum"   resultType="double">
+		select coalesce(sum(sum),0) from cart  where uid=#{uid} and buy=1
+	</select>
+	
+		
+</mapper>

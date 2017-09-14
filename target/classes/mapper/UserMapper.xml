@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mysystem.dao.UserDao">
+	<!-- 账户信息Dao层的实现 -->
+	<resultMap type="com.mysystem.entity.User" id="userMap">
+		<id column="uid" property="uid"/>
+		<result column="utid" property="utid"/>
+		<result column="point" property="point"/>
+		<result column="priority" property="priority"/>
+	</resultMap>
+
+	<!-- 通过utid查找用户 -->
+	<select id="findByUtid" parameterType="Integer" resultType="com.mysystem.entity.User">
+		select * from user where utid = #{utid}
+	</select>
+	
+<!-- 添加账户信息 -->
+	<insert id="add" parameterType="User"> insert into user(utid,point,priority) values(#{utid},'1000',#{priority}) </insert>
+	
+	
+	<update id="updatePoint" parameterType="UserPoint">
+	  update user set point=#{point}  where uid = #{uid}
+	</update>
+	
+		
+</mapper>

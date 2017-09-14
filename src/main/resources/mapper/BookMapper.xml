@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- Dao层的实现 -->
+<mapper namespace="com.mysystem.dao.BookDao">
+	<!-- 账户申请信息结果集 -->
+	<resultMap type="com.mysystem.entity.Book" id="bookMap">
+		<id column="bookId" property="bookId"/>
+		<result column="bookName" property="bookName"/>
+		<result column="price" property="price"/>
+		<result column="stock" property="stock"/>
+		<result column="category" property="category"/>
+		<result column="description" property="description"/>
+		<!-- <association property="" column=""></association> -->
+	</resultMap>
+	<select id="getDetail" parameterType="Integer" resultType="String">
+		select description from book  where bookId=#{bookId}
+	</select>
+	
+	<select id="findAll" resultMap="bookMap">
+		select * from book  where stock>#{thre}
+		<if test="conf==''">
+		 and category != 'Confidential'	
+		 </if>
+		limit #{pagestart},#{pagesize}
+	</select>
+	
+	<!-- 计数 -->
+	<select id="countAll"  resultType="Integer">
+		select count(*) from book where stock>#{thre}
+		<if test="conf==''">
+		 and category != 'Confidential'	
+		 </if>
+	</select>
+
+	<select id="findByName" resultMap="bookMap">
+		select * from book  where stock>0
+		<if test="param!=''">
+		 and bookName like '%${param}%'	
+		 </if>
+		 <if test="conf==''">
+		 and category != 'Confidential'	
+		 </if>
+		limit #{pagestart},#{pagesize}
+	</select>
+	
+	<select id="findByBookId" parameterType="Integer"  resultMap="bookMap">
+		select * from book  where bookId=#{bookId}
+	</select>
+	
+	<!-- 计数 -->
+	<select id="countByName"  resultType="Integer">
+		select count(*) from book where stock>0
+		<if test="param!=''">
+		 and bookName like '%${param}%'	
+		 </if>
+		 <if test="conf==''">
+		 and category != 'Confidential'	
+		 </if>
+	</select>
+	
+	<update id="editBook" parameterType="Book">
+	  update book set price=#{price},stock=#{stock},category=#{category},description=#{description}  where bookId = #{bookId}
+	</update>
+	
+	<select id="findByCat" resultMap="bookMap">
+		select * from book  where stock>0 
+		<if test="param!=''">
+		and category like '%${param}%'	
+		</if>	
+		<if test="conf==''">
+		 and category != 'Confidential'	
+		 </if>
+		limit #{pagestart},#{pagesize}
+	</select>
+	
+	<!-- 计数 -->
+	<select id="countByCat"  resultType="Integer">
+		select count(*) from book where stock>0 
+		<if test="param!=''">
+		and category like '%${param}%'	
+		</if>	
+		<if test="conf==''">
+		 and category != 'Confidential'	
+		 </if>
+	</select>
+	
+	
+	<select id="findById" resultType="Book">
+		select * from book  where bookId = #{bookId} 
+	</select>
+	
+	<update id="updateStock" parameterType="Book">
+	  update book set stock=#{stock}  where bookId = #{bookId}
+	</update>
+	
+<insert id="addBook" parameterType="Book"> insert into book(bookName,price,stock,category,description) values(#{bookName},#{price},#{stock},#{category},#{description}) </insert>
+	
+</mapper>

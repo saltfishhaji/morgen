@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 账户申请信息Dao层的实现 -->
+<mapper namespace="com.mysystem.dao.UserTrailDao">
+	<!-- 账户申请信息结果集 -->
+	<resultMap type="com.mysystem.entity.UserTrail" id="userTrailMap">
+		<id column="utid" property="utid"/>
+		<result column="userName" property="username"/>
+		<result column="password" property="password"/>
+		<result column="tradePass" property="tradePass"/>
+		<result column="email" property="email"/>
+		<result column="age" property="age"/>
+		<result column="ustatus" property="ustatus"/>
+		<!-- <association property="" column=""></association> -->
+	</resultMap>
+	
+	<!-- 通过用户名查找账户 -->
+	<select id="findByUsername" parameterType="String" resultType="com.mysystem.entity.UserTrail">
+		select * from userTrail where username = #{username}
+	</select>
+	
+	<!-- 通过uitd获取账户申请信息 -->
+	<select id="findByUtid" parameterType="Integer" resultType="com.mysystem.entity.UserTrail">
+		select * from userTrail where utid = #{utid}
+	</select>
+	
+	
+	<!-- 查找待审核的账户申请 -->
+	<select id="findUnverified" resultMap="userTrailMap">
+		select * from userTrail  where ustatus='0' 
+		<if test="username!=''">
+		and userTrail.username like '%${username}%'
+		</if>
+		
+		limit #{pagestart},#{pagesize}
+	</select>
+	
+	<!-- 计数 -->
+	<select id="countUnverified"  resultType="Integer">
+		select count(*) from userTrail where ustatus='0' 
+		<if test="username!=''">
+		and userTrail.username like '%${username}%'
+		</if>
+	</select>
+	
+		<!-- 驳回账户申请 -->
+	<update id="rejectUser" parameterType="Integer">
+	  update userTrail set ustatus=1  where utid = #{id}
+	</update>
+	
+	<update id="editUser" parameterType="UserTrail">update userTrail set email=#{email},age=#{age} where utid=#{utid} </update>
+	
+	
+	<!-- 通过账户申请 -->
+	<update id="passUser" parameterType="Integer">
+	  update userTrail set ustatus=2  where utid = #{id}
+	</update>
+		<!-- 注册账户 -->
+	<insert id="register" parameterType="UserTrail"> insert into userTrail(username,password,tradePass,email,age,ustatus) values(#{username},#{password},#{tradePass},#{email},#{age},'0') </insert>
+		
+	<select id="findAll" resultMap="userTrailMap">
+		select * from userTrail   where ustatus!='0' 
+		<if test="username!=''">
+		and  userTrail.username like '%${username}%'
+		</if>
+		
+		limit #{pagestart},#{pagesize}
+	</select>
+	
+	<!-- 计数 -->
+	<select id="countAll"  resultType="Integer">
+		select count(*) from userTrail where ustatus!='0' 
+		<if test="username!=''">
+		and  userTrail.username like '%${username}%'
+		</if>
+	</select>
+</mapper>
